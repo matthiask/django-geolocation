@@ -70,3 +70,6 @@ class GeoLocation(models.Model):
 
         if save:
             self.save()
+
+    def is_valid(self):
+        return self.latitude is not None and self.longitude is not None
