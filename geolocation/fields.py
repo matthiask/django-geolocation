@@ -76,3 +76,11 @@ class JSONField(models.TextField):
         assert isinstance(value, basestring)
 
         return value
+
+
+try:
+    from south.modelsinspector import add_introspection_rules
+    JSONField_introspection_rule = ( (JSONField,), [], {}, )
+    add_introspection_rules(rules=[JSONField_introspection_rule], patterns=["^geolocation\.fields"])
+except ImportError:
+    pass
