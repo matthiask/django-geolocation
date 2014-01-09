@@ -1,5 +1,6 @@
 from datetime import datetime
-import urllib, urllib2
+import urllib
+import urllib2
 
 from django.db import models
 from django.utils import simplejson
@@ -21,23 +22,25 @@ class GeoLocationManager(models.Manager):
 
 
 class GeoLocation(models.Model):
-    created = models.DateTimeField(_('created'), default=datetime.now,
-        db_index=True)
+    created = models.DateTimeField(
+        _('created'), default=datetime.now, db_index=True)
     address = models.CharField(_('address'), max_length=200, unique=True)
 
     _data = JSONField(editable=False, blank=True, null=True)
 
     formatted_address = models.TextField(_('formatted address'), blank=True)
-    latitude = models.DecimalField(_('latitude'), max_digits=20, decimal_places=17,
+    latitude = models.DecimalField(
+        _('latitude'), max_digits=20, decimal_places=17,
         blank=True, null=True)
-    longitude = models.DecimalField(_('longitude'), max_digits=20, decimal_places=17,
+    longitude = models.DecimalField(
+        _('longitude'), max_digits=20, decimal_places=17,
         blank=True, null=True)
+
+    objects = GeoLocationManager()
 
     class Meta:
         verbose_name = _('geolocation')
         verbose_name_plural = _('geolocations')
-
-    objects = GeoLocationManager()
 
     def __unicode__(self):
         if self.latitude is None or self.longitude is None:
@@ -50,14 +53,14 @@ class GeoLocation(models.Model):
             urllib.urlencode({
                 'sensor': 'false',
                 'address': self.address.encode('utf-8'),
-                }),
-            ))
+            }),
+        ))
 
-        result = urllib2.urlopen(request, timeout=2) # 2 seconds
+        result = urllib2.urlopen(request, timeout=2)  # 2 seconds
         self._data = simplejson.load(result, use_decimal=True)
 
         try:
-            results = self._data['results'][0] # take first result
+            results = self._data['results'][0]  # use first result
             location = results['geometry']['location']
 
             self.formatted_address = results['formatted_address']

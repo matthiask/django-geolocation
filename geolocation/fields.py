@@ -1,4 +1,5 @@
 import logging
+
 logger = logging.getLogger(__name__)
 
 from django import forms
@@ -6,11 +7,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import simplejson as json
 
+
 class JSONFormField(forms.fields.CharField):
     def clean(self, value, *args, **kwargs):
         if value:
             try:
-                # Run the value through JSON so we can normalize formatting and at least learn about malformed data:
+                # Run the value through JSON so we can normalize formatting and
+                # at least learn about malformed data:
                 value = json.dumps(json.loads(value), cls=DjangoJSONEncoder)
             except ValueError:
                 raise forms.ValidationError("Invalid JSON data!")
@@ -44,7 +47,8 @@ class JSONField(models.TextField):
             try:
                 return json.loads(value)
             except ValueError:
-                logging.exception("Unable to deserialize store JSONField data: %s", value)
+                logging.exception(
+                    "Unable to deserialize store JSONField data: %s", value)
                 return {}
         else:
             assert value is None
@@ -55,7 +59,8 @@ class JSONField(models.TextField):
         return self._flatten_value(value)
 
     def value_to_string(self, obj):
-        """Extract our value from the passed object and return it in string form"""
+        """Extract our value from the passed object and return it in string
+        form"""
 
         if hasattr(obj, self.attname):
             value = getattr(obj, self.attname)
@@ -80,7 +85,9 @@ class JSONField(models.TextField):
 
 try:
     from south.modelsinspector import add_introspection_rules
-    JSONField_introspection_rule = ( (JSONField,), [], {}, )
-    add_introspection_rules(rules=[JSONField_introspection_rule], patterns=["^geolocation\.fields"])
+    JSONField_introspection_rule = ((JSONField,), [], {})
+    add_introspection_rules(
+        rules=[JSONField_introspection_rule],
+        patterns=["^geolocation\.fields"])
 except ImportError:
     pass
