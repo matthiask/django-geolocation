@@ -4,3 +4,5 @@
 \#*#
 .DS_Store
 ._*
+dist
+django_geolocation.egg-info
